@@ -21,44 +21,52 @@ public class Algorithms {
 
     }
 
-    // This function is for the greedy with the maximum coverage.
-    public float Aplistos_Megistis_Kalipsis(int Si[][], int N[], int k) {
-        int i, j;
+    // This function is for the greedy with the maximum coverage. Takes as parameters the maximum amount of routers we can have.
+    public int[] Aplistos_Megistis_Kalipsis(int Si[][], int N[], int k,int n, int c, int m) {
+boolean [] covered = new boolean[n];
+int [] Result = new int[k];
+int countchoice = 0;
+int ElementsCoveredTotal = 0 ;
 
-        int routers[] = new int[k];// This is going to print the answer , which is going to be which routers we
-                                   // will use to cover the Universe(U).
-        int elements_of_routers[] = new int[Si.length];// This is going to be the sum amount of points each router
-                                                       // cover.
-        for (i = 0; i < Si.length; i++) {
-            for (j = 0; j < Si[i].length; j++) {
-                if (Si[i][j] != -1) {
-                    elements_of_routers[i]++;
-                }
-            }
-            // sorts the sum of elemetns in order to find the greeatest.
-            mergesort(elements_of_routers);
+while(countchoice < k && ElementsCoveredTotal < n){
+    int indexSubset = -1;
+    int newmaximum = 0;
 
-            // this is to sort it in Reverst from the greatest to the smallest.
-            for (int t = 0; t < elements_of_routers.length / 2; t++) {
-                int temp = elements_of_routers[t];
-                elements_of_routers[t] = elements_of_routers[elements_of_routers.length - 1 - i];
-                elements_of_routers[elements_of_routers.length - 1 - i] = temp;
-            }
+    for(int i=0; i<m; i++){
+        int currently = 0;
+        for(int j=0; j<c; j++){
+            int elements = Si[i][j];
+            if(elements == 0)break;
 
-            // the for is getting the i from the above for loop (which indicated the router
-            // we are in) and the j is going for all the elements of the specific router.
-            for (int i2 = 0; i2 < router.length; i2++) {
-                for (j = 0; j < Si[i].length; j++) {
-                    routers[i2] = Si[i][j];
-                    for (int i3 = 0; i3 < N.length; i3++) {
-                        if (Si[i][j] == N[i3])// if there is no an element it goes to the next one. The array N[] is
-                                              // sorted from the smallest to the greatest.
-                            N[i3] = -1;
-                    }
+            for(int u=0; u<n; u++){
+                if(N[u] == elements && !covered[u]){
+                    currently++;
+                    break;
                 }
             }
         }
+        if(currently > newmaximum){
+            newmaximum = currently;
+            indexSubset = 1;
+        }
+    }
 
+    if(indexSubset == -1 || newmaximum == 0) return new int[0];
+
+    Result[countchoice++] = indexSubset;
+
+    for(int j=0; j<c; j++){
+        int elements = Si[indexSubset][j];
+        for(int u =0; u<n; u++){
+            if(N[u] == elements && !covered[u]){
+                covered[u] = true;
+                ElementsCoveredTotal++;
+            }
+        }
+    }
+}
+return (ElementsCoveredTotal == n) ? Result : new int[0];
+     
     }
 
     public void Aplistos_Elaxistou_Megethous() {
@@ -67,22 +75,54 @@ public class Algorithms {
 
     // This is the algorithm which is based on the density. It has to calculate the
     // denstity and based on that to find the best way to cover the Universe (U).
-    public float Aplistos_Basi_Piknotitas(int Si[][], int N, int k) {
-        float density = 0;// This is going to be a float number.
+    public int[] Aplistos_Basi_Piknotitas(int Si[][], int N[], int k, int c, int n, int m) {
+        
+        boolean[] coveredElements  = new boolean[n];
+        int[] Result = new int[k];
+        int new_uncovered_elements = 0;// The uncovered will be a counter.
+        int ElementsCoveredTotal = 0;
 
-        int new_uncovered_elements = 2, i, j = 0;// The uncovered will be a counter (for now).
-        for (i = 0; i < Si.length; i++) { // Initializing the positions of the array. Which is going to be from the
-                                          // command line after.
-            Si[i][0] = 2;
-        }
-        // the numbers in everything are just for testing and creating the idea of how
-        // the algorithm is going to be working.
-        if (Si[0][0] == Si[1][0]) {
-            if (i > j) {
-                density = (float) new_uncovered_elements / Si[j][0];
+while(new_uncovered_elements < k && ElementsCoveredTotal < n){
+    int indexOfSet = -1;
+    double density = 0;// This is going to be a double number.
+
+    for(int i=0; i<m; i++){
+        int AnotherCount = 0;
+        int TotalSubsets = 0;
+
+        for(int j=0;j <c; j++){
+            if(Si[i][j] == 0) break;
+            TotalSubsets++;
+            for(int u=0; u<n; u++){
+                if(N[u] == Si[i][j] && !coveredElements[u]){
+                    AnotherCount++;
+                    break;
+                }
             }
         }
-        return density;
+if(TotalSubsets > 0){
+    density = (double) AnotherCount / TotalSubsets;
+    if(density > maximumdensity && AnotherCount > 0){
+        maximumdensity = density;
+        indexOfSet = i;
+    }
+}
+    }
+
+    if(indexOfSet == -1)return new int[0];
+
+    Result[new_uncovered_elements++] = indexOfSet;
+    for(int j=0; j<c; j++){
+        for(int u=0; u<n; u++){
+            if(N[u] == Si[indexOfSet][j] && !coveredElements[u]){
+                coveredElements[u] = true;
+                ElementsCoveredTotal++;
+            }
+        }
+    }
+}
+return (ElementsCoveredTotal == n) ? Result : new int[0];
+        
     }
 
     public static void main(String[] args) {
