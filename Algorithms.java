@@ -21,52 +21,55 @@ public class Algorithms {
 
     }
 
-    // This function is for the greedy with the maximum coverage. Takes as parameters the maximum amount of routers we can have.
-    public int[] Aplistos_Megistis_Kalipsis(int Si[][], int N[], int k,int n, int c, int m) {
-boolean [] covered = new boolean[n];
-int [] Result = new int[k];
-int countchoice = 0;
-int ElementsCoveredTotal = 0 ;
+    // This function is for the greedy with the maximum coverage. Takes as
+    // parameters the maximum amount of routers we can have.
+    public int[] Aplistos_Megistis_Kalipsis(int Si[][], int N[], int k, int n, int c, int m) {
+        boolean[] covered = new boolean[n];
+        int[] Result = new int[k];
+        int countchoice = 0;
+        int ElementsCoveredTotal = 0;
 
-while(countchoice < k && ElementsCoveredTotal < n){
-    int indexSubset = -1;
-    int newmaximum = 0;
+        while (countchoice < k && ElementsCoveredTotal < n) {
+            int indexSubset = -1;
+            int newmaximum = 0;
 
-    for(int i=0; i<m; i++){
-        int currently = 0;
-        for(int j=0; j<c; j++){
-            int elements = Si[i][j];
-            if(elements == 0)break;
+            for (int i = 0; i < m; i++) {
+                int currently = 0;
+                for (int j = 0; j < c; j++) {
+                    int elements = Si[i][j];
+                    if (elements == 0)
+                        break;
 
-            for(int u=0; u<n; u++){
-                if(N[u] == elements && !covered[u]){
-                    currently++;
-                    break;
+                    for (int u = 0; u < n; u++) {
+                        if (N[u] == elements && !covered[u]) {
+                            currently++;
+                            break;
+                        }
+                    }
+                }
+                if (currently > newmaximum) {
+                    newmaximum = currently;
+                    indexSubset = 1;
+                }
+            }
+
+            if (indexSubset == -1 || newmaximum == 0)
+                return new int[0];
+
+            Result[countchoice++] = indexSubset;
+
+            for (int j = 0; j < c; j++) {
+                int elements = Si[indexSubset][j];
+                for (int u = 0; u < n; u++) {
+                    if (N[u] == elements && !covered[u]) {
+                        covered[u] = true;
+                        ElementsCoveredTotal++;
+                    }
                 }
             }
         }
-        if(currently > newmaximum){
-            newmaximum = currently;
-            indexSubset = 1;
-        }
-    }
+        return (ElementsCoveredTotal == n) ? Result : new int[0];
 
-    if(indexSubset == -1 || newmaximum == 0) return new int[0];
-
-    Result[countchoice++] = indexSubset;
-
-    for(int j=0; j<c; j++){
-        int elements = Si[indexSubset][j];
-        for(int u =0; u<n; u++){
-            if(N[u] == elements && !covered[u]){
-                covered[u] = true;
-                ElementsCoveredTotal++;
-            }
-        }
-    }
-}
-return (ElementsCoveredTotal == n) ? Result : new int[0];
-     
     }
 
     public void Aplistos_Elaxistou_Megethous() {
@@ -76,53 +79,55 @@ return (ElementsCoveredTotal == n) ? Result : new int[0];
     // This is the algorithm which is based on the density. It has to calculate the
     // denstity and based on that to find the best way to cover the Universe (U).
     public int[] Aplistos_Basi_Piknotitas(int Si[][], int N[], int k, int c, int n, int m) {
-        
-        boolean[] coveredElements  = new boolean[n];
+
+        boolean[] coveredElements = new boolean[n];
         int[] Result = new int[k];
         int new_uncovered_elements = 0;// The uncovered will be a counter.
         int ElementsCoveredTotal = 0;
 
-while(new_uncovered_elements < k && ElementsCoveredTotal < n){
-    int indexOfSet = -1;
-    double density = 0;// This is going to be a double number.
+        while (new_uncovered_elements < k && ElementsCoveredTotal < n) {
+            int indexOfSet = -1;
+            double density = 0;// This is going to be a double number.
 
-    for(int i=0; i<m; i++){
-        int AnotherCount = 0;
-        int TotalSubsets = 0;
+            for (int i = 0; i < m; i++) {
+                int AnotherCount = 0;
+                int TotalSubsets = 0;
 
-        for(int j=0;j <c; j++){
-            if(Si[i][j] == 0) break;
-            TotalSubsets++;
-            for(int u=0; u<n; u++){
-                if(N[u] == Si[i][j] && !coveredElements[u]){
-                    AnotherCount++;
-                    break;
+                for (int j = 0; j < c; j++) {
+                    if (Si[i][j] == 0)
+                        break;
+                    TotalSubsets++;
+                    for (int u = 0; u < n; u++) {
+                        if (N[u] == Si[i][j] && !coveredElements[u]) {
+                            AnotherCount++;
+                            break;
+                        }
+                    }
+                }
+                if (TotalSubsets > 0) {
+                    density = (double) AnotherCount / TotalSubsets;
+                    if (density > maximumdensity && AnotherCount > 0) {
+                        maximumdensity = density;
+                        indexOfSet = i;
+                    }
+                }
+            }
+
+            if (indexOfSet == -1)
+                return new int[0];
+
+            Result[new_uncovered_elements++] = indexOfSet;
+            for (int j = 0; j < c; j++) {
+                for (int u = 0; u < n; u++) {
+                    if (N[u] == Si[indexOfSet][j] && !coveredElements[u]) {
+                        coveredElements[u] = true;
+                        ElementsCoveredTotal++;
+                    }
                 }
             }
         }
-if(TotalSubsets > 0){
-    density = (double) AnotherCount / TotalSubsets;
-    if(density > maximumdensity && AnotherCount > 0){
-        maximumdensity = density;
-        indexOfSet = i;
-    }
-}
-    }
+        return (ElementsCoveredTotal == n) ? Result : new int[0];
 
-    if(indexOfSet == -1)return new int[0];
-
-    Result[new_uncovered_elements++] = indexOfSet;
-    for(int j=0; j<c; j++){
-        for(int u=0; u<n; u++){
-            if(N[u] == Si[indexOfSet][j] && !coveredElements[u]){
-                coveredElements[u] = true;
-                ElementsCoveredTotal++;
-            }
-        }
-    }
-}
-return (ElementsCoveredTotal == n) ? Result : new int[0];
-        
     }
 
     public static void main(String[] args) {
@@ -134,15 +139,34 @@ return (ElementsCoveredTotal == n) ? Result : new int[0];
         // the k is the maximum amount of routers we can have in the set of the
         // Coverage(k). Aka the length of router[].
 
+        int flag;// This is for the third part of the implementation where the flag = 0 the
+                     // program is reading from the dataset we have
+        // When the flag = 1 the program is ignoring the dataset file and creating
+        // random data for the execution of the program.
+
         Algorithms a = new Algorithms();// Call of a non static function.
         Algorithms b = new Algorithms();
         Algorithms c = new Algorithms();
         Algorithms d = new Algorithms();
+int n  , k ;
+int m = 5;
+ int c2 = 5;
+int [][] Si = new int[m][c2];
+        // This is where the algorithms are going to print their name and time they took
+        // in order to execute for our experiments.
 
-        // This is where it prints the density just for testing.
-        System.out.println("The density algorithm Aplistos_Basi_Piknotitas is: "
-                + a.Aplistos_Basi_Piknotitas(new int[2][2], 0, 0));
+        long StartTime2 = System.nanoTime();
         System.out.println("The density algorithm Aplistos_Megistis_Kalipsis is: "
-                + b.Aplistos_Megistis_Kalipsis(new int[2][2], new int[0], 0));
+                + b.Aplistos_Megistis_Kalipsis(new int[2][2], new int[0], 0 ,n, m ,k));
+
+        long EndTime2 = System.nanoTime();
+        System.out.println("Duration of the algorithm: " + (EndTime2 - StartTime2));
+
+        long StartTime4 = System.nanoTime();
+        System.out.println("The density algorithm Aplistos_Basi_Piknotitas is: "
+                + a.Aplistos_Basi_Piknotitas(new int[2][2],0, 0 ,n, m ,k));
+        long EndTime4 = System.nanoTime();
+        System.out.println("Duration of the algorithm: " + (EndTime4 - StartTime4));
+
     }
 }

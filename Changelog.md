@@ -1,3 +1,8 @@
+## 17-04-2026
+## Add
+The command for the timing for the experimental part of the assignment.
+
+
 ## 16-04-2026
 ### Change
 Changed and improved the logic of how the algorithms (Megistis kalipsis && piknotitas) are handling the subsets and result set.

@@ -1,0 +1,1 @@
+Specs of the PC we worked on:
